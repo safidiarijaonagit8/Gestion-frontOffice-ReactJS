@@ -7,10 +7,9 @@ import { topLists, sections } from "../../database/data";
 import Sidebar from "../Sidebar/Sidebar";
 import ArticlesApiServices from '../../services/ArticlesApiServices';
 
-function Home(propss) { 
+function Home() { 
 const[articles, setArticles] = useState([]);
 
-  const [imageSrc, setImageSrc] = useState('');
 
   /* Navbar - background changes with scroll */
   useEffect(() => {
@@ -61,7 +60,7 @@ useEffect(() => {
   const fetchData = async () => {
     const dataService = new ArticlesApiServices(); // Create an instance of the service
     try {
-      const result = await dataService.getListArticles(); // Call the fetchData method
+      const result = await dataService.getLatestArticles(); // Call the fetchData method
       setArticles(result);
      // setLoading(false);
     } catch (error) {
@@ -76,45 +75,9 @@ useEffect(() => {
 
 
 
-/*useEffect(() => {
-  const fetchImage = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/api/image'); //maka list ana sary ato
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const blob = await response.blob();
-      const imageUrl = URL.createObjectURL(blob);
-      setImageSrc(imageUrl);
-      setLoading(false);
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
-  fetchImage();
-}, []);*/
 
 
-   const getObjectURL = async (sary) => {
-  try {
-    const response = await fetch('http://localhost:8080/api/sary?sary='+sary); //maka list ana sary ato
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const blob = await response.blob();
-    const imageUrl = URL.createObjectURL(blob);
-    
-  setImageSrc(imageUrl);
-  return imageUrl;
-   // setLoading(false);
-  } catch (error) {
-   // setError(error.message);
-   // setLoading(false);
-  }
- 
-};
+
 
 
 
@@ -134,22 +97,26 @@ useEffect(() => {
             </div>
             <h3>Dernières Actualités</h3>
             <br />
+            <div className="heading">
+                <h2>
+                  <a href=""></a>
+                </h2>
+                <p>
+                  <a href="/news">Voir tout</a>
+                </p>
+              </div>
             <div className="content">
 
           
-            {articles.slice(0, 6).map((article, index) => (
+            {articles.map((article, index) => (
               
-             
-            //  getObjectURL(article.sary),
-             
-             
               <RectCard
               key={index}
               title={article.titre}
-              //image={article.sary}
-            image={''} /*imageSrc*/
+              
+              sary={article.sary}
               idarticle={article.id}
-              setIdArticle={propss.setIdArticle}
+             
             />
     
               ))}
@@ -172,9 +139,9 @@ useEffect(() => {
                   .map((playlist, index) => (
                     <Card
                       key={index}
-                      title={playlist.title}
-                      subtitle={playlist.subtitle}
-                      image={playlist.image}
+                      titre={playlist.title}
+                      soustitre={playlist.subtitle}
+                      sary={playlist.image}
                       artist={playlist.artist}
                     />
                   ))}

@@ -3,14 +3,18 @@ import React, { useEffect, useState } from "react";
 import Card from "../Card/Card";
 import Navbar from "../Navbar/Navbar";
 import RectCard from "../RectCard/RectCard";
-import "./News.scss";
-import { topLists, sections } from "../../database/data";
-
-import Sidebar from "../Sidebar/Sidebar";
-import ArticlesApiServices from '../../services/ArticlesApiServices';
+import "./NewsParCategorie.scss";
 import CategoriesApiServices from '../../services/CategoriesApiServices';
 
-function News(){
+import Sidebar from "../Sidebar/Sidebar";
+import Pagination from "../Pagination/Pagination";
+import ArticlesApiServices from '../../services/ArticlesApiServices';
+import { useParams } from 'react-router-dom';
+
+function NewsParCategorie(){
+
+    const { idCategorie } = useParams();
+
     useEffect(() => {
         const scrollContainer = document.querySelector(".home"),
           navbar = document.querySelector(".navbar");
@@ -56,40 +60,52 @@ function News(){
       }, []);
 
       const[articles, setArticles] = useState([]);
-      const[categories, setCategories] = useState([]);
-      const [articlesByCategory, setArticlesByCategory] = useState([]);
+     
+      const [currentPage, setCurrentPage] = useState(1); // Note: 0-based page index
+     const [totalPages, setTotalPages] = useState(0);
+     const[categories, setCategories] = useState([]);
+     const [categoryName, setCategoryName] = useState('');
 
-    
 
-    
-
-      useEffect(() => {
-        const fetchData = async () => {
-          const categorieService = new CategoriesApiServices();
-          const articlesService = new ArticlesApiServices(); // Assuming you have an Articles API service
-      
+     useEffect(() => {
+        const fetchArticles = async () => {
+          const articlesService = new ArticlesApiServices();
           try {
-            const listCategories = await categorieService.getListCategories();
-            setCategories(listCategories);
-      
-            // Fetch latest articles for each category and organize them by category ID
-            const articlesByCategory = {};
-            await Promise.all(
-              listCategories.map(async (category) => {
-                const articles = await articlesService.getLatest10ArticlesByCategory(category.id); // Adjust API call as per your backend
-                articlesByCategory[category.id] = articles;
-              })
-            );
-      
-            setArticlesByCategory(articlesByCategory);
+            const response = await articlesService.getArticlesByCategory(idCategorie, currentPage, 1);
+            setArticles(response.content); // Assuming the backend returns a Page object
+            setTotalPages(response.totalPages);
           } catch (error) {
-            console.error('Error fetching data:', error);
-            // Handle error state here if needed
+            console.error('Error fetching articles:', error);
           }
         };
-      
-        fetchData();
-      }, []); 
+    
+        fetchArticles();
+      }, [idCategorie, currentPage]);
+
+      const handlePageChange = (page) => {
+        setCurrentPage(page); // Convert to 0-based index
+      };
+
+
+      const fetchCategories = async () => {
+        const categoriesService = new CategoriesApiServices();
+        try {
+          const categories = await categoriesService.getListCategories();
+          const category = categories.find(cat => cat.id === parseInt(idCategorie));
+          if (category) {
+            setCategoryName(category.nomCategorie);
+          }
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+      };
+
+      useEffect(() => {
+        fetchCategories();
+        
+      }, [idCategorie]);
+
+     
     return (
       
       
@@ -103,26 +119,18 @@ function News(){
             <div className="home-container">
               <section className="section-1" key={0}>
                 <div className="heading">
-                  <h1>Nos Actualités</h1>
+                  <h2>{categoryName}</h2>
                 </div>
                
               </section>
     
-              {categories.map((category, categoryIndex) => (
-                <section key={categoryIndex + 1}>
-                  <div className="heading">
-                    <h2>
-                      <a href="">{category.nomCategorie}</a>
-                    </h2>
-                    <p>
-                    <a href={`/newsparcategorie/${category.id}`}>Voir tout</a> 
-                    </p>
-                  </div>
+             
+                <section key={idCategorie}>
+                
                   <div className="content">
-                  {(articlesByCategory[category.id] || [])
-                    .map((article, articleIndex) => (
+                  {articles.map((article) => (
                                 <Card
-                                    key={articleIndex}
+                                    key={article.id}
                                     titre={article.titre}
                                     soustitre={article.soustitre}
                                     sary={article.sary}
@@ -131,8 +139,9 @@ function News(){
                                 />
                             ))}
                   </div>
+                  <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
                 </section>
-              ))}
+             
             </div>
           </div>
         </div>
@@ -143,4 +152,4 @@ function News(){
       );
 
 }
-export default News;
+export default NewsParCategorie;

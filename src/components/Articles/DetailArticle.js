@@ -5,10 +5,12 @@ import Navbar from "../Navbar/Navbar";
 import RectCard from "../RectCard/RectCard";
 import "./DetailArticle.scss";
 import { topLists, sections } from "../../database/data";
+import { useParams } from 'react-router-dom';
 
 import Sidebar from "../Sidebar/Sidebar";
+import ArticlesApiServices from '../../services/ArticlesApiServices';
 
-function DetailArticle(propss){
+function DetailArticle(){
     useEffect(() => {
         const scrollContainer = document.querySelector(".home"),
           navbar = document.querySelector(".navbar");
@@ -21,7 +23,7 @@ function DetailArticle(propss){
           });
         }
       });
-    
+      const {idarticle} = useParams();
       /* Responsive Style */
       let [cardNum, setCardNum] = useState(6);
     
@@ -52,8 +54,38 @@ function DetailArticle(propss){
           getCardsNum();
         });
       }, []);
+
+      const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const articlesApiServices = new ArticlesApiServices();
+
+  useEffect(() => {
+    const fetchArticle = async (id) => {
+      try {
+        const data = await articlesApiServices.getDetailArticle(id);
+        setArticle(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+   
+      fetchArticle(idarticle);
     
-    return (
+  }, [idarticle]);
+if(article){
+  var imageUrl = article.sary ? `http://localhost:8080/images/${article.sary}` : '';
+}  
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = { day: '2-digit', month: 'long', year: 'numeric' };
+  return date.toLocaleDateString('fr-FR', options);
+};
+
+  return (
       
       
             <div className="app">
@@ -65,9 +97,25 @@ function DetailArticle(propss){
     
             <div className="home-container">
               <section className="section-1" key={0}>
-              <h1>{propss.idarticle}</h1>
+              {loading && <p>Loading...</p>}
+                {error && <p>Error: {error}</p>}
+                {article && (
+                  <div className="article-container">
+                    <h2>{article.titre}</h2>
+                    <h3>{article.soustitre}</h3>
+                    <br />  <br /> 
+                    {imageUrl && <img src={imageUrl} alt="" />}
+                    <br />  
+                    <h5 className="date-publication">{formatDate(article.datepublication)}</h5>
+                    <br />  <br />
+                    <p className="article-content" dangerouslySetInnerHTML={{ __html: article.contenus }} />
+                    
+                    
+                  </div>
+                )}
                
               </section>
+              
     
              
             </div>

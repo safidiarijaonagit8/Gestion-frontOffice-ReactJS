@@ -1,20 +1,26 @@
 import React from "react";
 import "./Card.scss";
+import { Link } from "react-router-dom";
 
-function Card({ title, subtitle, image, artist }) {
+function Card({titre,soustitre, sary, artist, idarticle}) {
+  const imageUrl = `http://localhost:8080/images/${sary}`;
+
   return (
+    <Link to={`/detailArticle/${idarticle}`}> 
     <div className="card">
       <div className={`image ${artist && "artist"}`}>
-        <img src={image} alt="" />
-        <div className="play-btn">
-          <ion-icon name="play-circle"></ion-icon>
-        </div>
+      <div className= "saryCard">
+        <img src={imageUrl} alt="" />
+          </div>
+      
+     
       </div>
       <div className="text">
-        <h4 className="card-title">{title}</h4>
-        <h5 className="card-subtitle">{subtitle}</h5>
+        <h4 className="card-title">{titre}</h4>
+        <h5 className="card-subtitle">{soustitre}</h5>
       </div>
     </div>
+    </Link> 
   );
 }
 
