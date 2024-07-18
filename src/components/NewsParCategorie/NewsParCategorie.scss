@@ -73,27 +73,6 @@
           }
         }
       }
-      img {
-        max-width: 100%;
-        height: auto;
-        object-fit: cover;
-        display: block;
-        margin: 0 auto;
-      }
-      .article-container {
-        position: relative;
-        padding: 20px;
-      }
-      
-      .date-publication {
-        position: absolute;
-        right: 10;
-      //  top: 0;
-      }
-      .article-content {
-        font-size: 1.0em; /* Adjust the size as needed */
-        line-height: 1.5; /* Optional: improve readability */
-      }
     }
   }
   
