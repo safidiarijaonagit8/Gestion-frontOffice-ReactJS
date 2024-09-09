@@ -2,11 +2,11 @@ import React from "react";
 import "./Card.scss";
 import { Link } from "react-router-dom";
 
-function Card({titre,soustitre, sary, artist, idarticle}) {
+function Card({titre,soustitre, sary, artist, id}) {
   const imageUrl = `http://localhost:8080/images/${sary}`;
 
   return (
-    <Link to={`/detailArticle/${idarticle}`}> 
+    <Link to={`/detailArticle/${id}`}> 
     <div className="card">
       <div className={`image ${artist && "artist"}`}>
       <div className= "saryCard">

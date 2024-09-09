@@ -135,7 +135,7 @@ function NewsParCategorie(){
                                     soustitre={article.soustitre}
                                     sary={article.sary}
                                     artist={''}
-                                    idarticle={article.id}
+                                    id={article.id}
                                 />
                             ))}
                   </div>

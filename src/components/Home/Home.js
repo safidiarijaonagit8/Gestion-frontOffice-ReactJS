@@ -6,9 +6,12 @@ import "./Home.scss";
 import { topLists, sections } from "../../database/data";
 import Sidebar from "../Sidebar/Sidebar";
 import ArticlesApiServices from '../../services/ArticlesApiServices';
+import EvenementsApiServices from '../../services/EvenementsApiServices';
+
 
 function Home() { 
 const[articles, setArticles] = useState([]);
+const[events, setEvents] = useState([]);
 
 
   /* Navbar - background changes with scroll */
@@ -58,10 +61,14 @@ const[articles, setArticles] = useState([]);
 
 useEffect(() => {
   const fetchData = async () => {
-    const dataService = new ArticlesApiServices(); // Create an instance of the service
+    const apiArticleService = new ArticlesApiServices(); // Create an instance of the service
+    const apiEventService = new EvenementsApiServices();
     try {
-      const result = await dataService.getLatestArticles(); // Call the fetchData method
+      const result = await apiArticleService.getLatestArticles(); // Call the fetchData method
       setArticles(result);
+      const listEventsLatest = await apiEventService.getLatestEvents();
+      setEvents(listEventsLatest);
+
      // setLoading(false);
     } catch (error) {
      // setError(error.message);
@@ -95,11 +102,11 @@ useEffect(() => {
             <div className="heading">
               <h1>Tongasoa</h1>
             </div>
-            <h3>Dernières Actualités</h3>
+           
             <br />
             <div className="heading">
                 <h2>
-                  <a href=""></a>
+                  <h3>Dernières Actualités</h3>
                 </h2>
                 <p>
                   <a href="/news">Voir tout</a>
@@ -122,8 +129,40 @@ useEffect(() => {
               ))}
             </div>
           </section>
+          <section className="section-1" key={0}>
+            <div className="heading">
+              
+            </div>
+           
+            <br />
+            <div className="heading">
+                <h2>
+                  <h3>Derniers Evènements</h3>
+                </h2>
+                <p>
+                  <a href="/news">Voir tout</a>
+                </p>
+              </div>
+            <div className="content">
 
-          {sections.map((section, index) => (
+          
+            {events.map((event, index) => (
+              
+            
+            <Card
+            key={index}
+            titre={event.titre}
+            soustitre={event.soustitre}
+            sary={event.sary}
+            artist={""}
+            id={event.id}
+          />
+    
+              ))}
+            </div>
+          </section>
+
+       {/*   {sections.map((section, index) => (
             <section key={index + 1}>
               <div className="heading">
                 <h2>
@@ -147,7 +186,7 @@ useEffect(() => {
                   ))}
               </div>
             </section>
-          ))}
+          ))}*/}
         </div>
       </div>
     </div>
